@@ -1,0 +1,105 @@
+import streamlit as st
+import requests
+import io
+import pandas as pd
+import time
+from datetime import datetime, date, timedelta
+import datetime
+
+st.sidebar.write("""
+## 新型コロナ関連リンク
+""")
+
+st.sidebar.write("""
+[福井県公認 新型コロナウイルス対策サイト](https://covid19-fukui.com/) 
+""")
+st.sidebar.write("""
+[福井県新型コロナウイルス情報 コロナビ](https://covid19-fukui.bosai-signal.jp) 
+""")
+
+st.sidebar.write("""
+[福井県新型コロナウイルス感染症のオープンデータ](https://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19.html) 
+""")
+
+st.sidebar.write("""
+[COVID-19 Japan-新型コロナウイルス対策ダッシュボード](hhttps://www.stopcovid19.jp/) 
+""")
+
+st.sidebar.write('')
+st.sidebar.write("""
+(C)2021 Pukumon Go All rights reserved.
+""")
+
+st.title('福井県新型コロナウイルス情報')  
+now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%Y/%m/%d %H:%M")
+st.info(now + '現在公開分まで\n'+ '\nデータ元:福井県新型コロナウイルス感染症のオープンデータhttps://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv')
+'\n'
+
+url = 'https://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv'
+r = requests.get(url).content
+df = pd.read_csv(io.BytesIO(r), sep=',').sort_values('No', ascending=False)
+
+st.write('陽性患者属性')
+st.dataframe(df[['No', '公表_年月日', '患者_居住地', '患者_年代',
+ '患者_性別', '患者_職業']],width=800, height=300)
+'\n'
+
+st.write('日別陽性者数')
+df_date = pd.to_datetime(df['公表_年月日']).value_counts()
+st.bar_chart(df_date)
+'\n'
+
+st.write('居住地別患者数')
+df_area_total = df['患者_居住地'].value_counts(ascending=False)
+st.bar_chart(df_area_total)
+'\n'
+
+st.write('年代別患者数')
+df_age = df['患者_年代'].value_counts()
+st.bar_chart(df_age)
+
+st.header('直近の状況')
+number = st.number_input('直近何日間のデータを見ますか？', min_value=int(1), max_value=None,  step=None, format=None, key=None)
+
+today = datetime.datetime.today() + timedelta(hours=+9)
+span = today - timedelta(days=number)
+
+today_str = today.strftime('%Y年%m月%d日')
+span_str = (span + timedelta(1)).strftime('%Y年%m月%d日')
+st.write('直近', number, '日間のデータ', span_str, '〜', today_str)
+
+df_date1 = pd.to_datetime(df['公表_年月日'])
+
+df_span = df[['No', '公表_年月日', '患者_居住地', '患者_年代',
+ '患者_性別', '患者_職業']][df_date1 > span]
+
+if (len(df_span.index) == 0): #emptyよりlenのほうが処理が早い
+    st.error('ご指定の期間内に陽性者はおりません')
+else:
+    st.write('陽性患者属性')
+    st.dataframe(df_span, width=800, height=300)
+
+left_column, center_column, right_column = st.beta_columns(3)
+
+df_date_span = pd.to_datetime(df['公表_年月日'])[df_date1>span].dt.date.value_counts()
+if not (df_date_span.empty):
+    left_column.write('日別陽性者数')
+    left_column.bar_chart(df_date_span,height=300)
+    left_column.table(df_date_span)
+
+df_area_span = df['患者_居住地'][df_date1>span].value_counts()
+if not (df_area_span.empty):
+    center_column.write('居住地別患者数')
+    center_column.bar_chart(df_area_span,height=300)
+    center_column.table(df_area_span)
+
+df_age_span = df['患者_年代'][df_date1>span].value_counts()
+if not (len(df_age_span.index) == 0): 
+    right_column.write('年代別患者数')
+    right_column.bar_chart(df_age_span,height=300)
+    right_column.table(df_age_span)
+
+
+
+
+
