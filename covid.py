@@ -2,9 +2,7 @@ import streamlit as st
 import requests
 import io
 import pandas as pd
-import time
-from datetime import datetime, date, timedelta
-import datetime
+from datetime import datetime, date, timedelta, timezone
 
 st.sidebar.write("""
 ## 新型コロナ関連リンク
@@ -31,7 +29,7 @@ st.sidebar.write("""
 """)
 
 st.title('福井県新型コロナウイルス情報')  
-now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%Y/%m/%d %H:%M")
+now = datetime.now(timezone(timedelta(hours=9))).strftime("%Y/%m/%d %H:%M")
 st.info(now + '現在公開分まで\n'+ '\nデータ元:福井県新型コロナウイルス感染症のオープンデータhttps://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv')
 '\n'
 
@@ -61,7 +59,7 @@ st.bar_chart(df_age)
 st.header('直近の状況')
 number = st.number_input('直近何日間のデータを見ますか？', min_value=int(1), max_value=None,  step=None, format=None, key=None)
 
-today = datetime.datetime.today() + timedelta(hours=+9)
+today = datetime.today() + timedelta(hours=+9)
 span = today - timedelta(days=number)
 
 today_str = today.strftime('%Y年%m月%d日')
