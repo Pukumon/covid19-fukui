@@ -59,6 +59,7 @@ st.bar_chart(df_age)
 st.header('直近の状況')
 number = st.number_input('直近何日間のデータを見ますか？', min_value=int(1), max_value=None,  step=None, format=None, key=None)
 
+
 today = datetime.today() + timedelta(hours=+9)
 span = today - timedelta(days=number)
 
