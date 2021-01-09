@@ -42,7 +42,7 @@ st.dataframe(df[['公表_年月日', '患者_居住地', '患者_年代',
  '患者_性別', '患者_職業']],width=800, height=300)
 '\n'
 
-st.write('日別陽性者数')
+st.write('日別新規陽性者数')
 df_date = pd.to_datetime(df['公表_年月日']).value_counts()
 st.bar_chart(df_date)
 '\n'
@@ -72,9 +72,14 @@ df_date1 = pd.to_datetime(df['公表_年月日'])
 df_span = df[['公表_年月日', '患者_居住地', '患者_年代',
  '患者_性別', '患者_職業']][df_date1 > span]
 
+df_span1 = (df_span != 0)
+sum_span = df_span1['公表_年月日'].sum().astype(str)
+print(sum_span)
+
 if (len(df_span.index) == 0): #emptyよりlenのほうが処理が早い
-    st.error('ご指定の期間内に陽性者はおりません')
+    st.info('ご指定の期間内に陽性者はおりません')
 else:
+    st.error('ご指定の期間内の新規陽性者数は' + sum_span + '人です')
     st.write('陽性患者属性')
     st.dataframe(df_span, width=800, height=300)
 
@@ -82,7 +87,7 @@ left_column, center_column, right_column = st.beta_columns(3)
 
 df_date_span = pd.to_datetime(df['公表_年月日'])[df_date1>span].dt.date.value_counts()
 if not (df_date_span.empty):
-    left_column.write('日別陽性者数')
+    left_column.write('日別新規陽性者数')
     left_column.bar_chart(df_date_span,height=300)
     left_column.table(df_date_span)
 
