@@ -39,7 +39,7 @@ df = pd.read_csv(io.BytesIO(r),index_col='No', sep=',').sort_values('No', ascend
 
 st.write('陽性患者属性')
 st.dataframe(df[['公表_年月日', '患者_居住地', '患者_年代',
- '患者_性別', '患者_職業']],width=800, height=300)
+ '患者_性別', '患者_職業']],width=640, height=200)
 '\n'
 
 st.write('日別新規陽性者数')
@@ -74,14 +74,13 @@ df_span = df[['公表_年月日', '患者_居住地', '患者_年代',
 
 df_span1 = (df_span != 0)
 sum_span = df_span1['公表_年月日'].sum().astype(str)
-print(sum_span)
 
 if (len(df_span.index) == 0): #emptyよりlenのほうが処理が早い
     st.info('ご指定の期間内に陽性者はおりません')
 else:
     st.error('ご指定の期間内の新規陽性者数は' + sum_span + '人です')
     st.write('陽性患者属性')
-    st.dataframe(df_span, width=800, height=300)
+    st.dataframe(df_span, width=600, height=300)
 
 left_column, center_column, right_column = st.beta_columns(3)
 
