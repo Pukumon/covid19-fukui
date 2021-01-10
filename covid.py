@@ -20,7 +20,7 @@ st.sidebar.write("""
 """)
 
 st.sidebar.write("""
-[COVID-19 Japan-新型コロナウイルス対策ダッシュボード](hhttps://www.stopcovid19.jp/) 
+[COVID-19 Japan-新型コロナウイルス対策ダッシュボード](https://www.stopcovid19.jp/) 
 """)
 
 st.sidebar.write('')
