@@ -1,4 +1,6 @@
 import streamlit as st
+import matplotlib.pyplot as plt
+import japanize_matplotlib
 import requests
 import io
 import pandas as pd
@@ -56,6 +58,20 @@ st.write('年代別患者数')
 df_age = df['患者_年代'].value_counts()
 st.bar_chart(df_age)
 
+#円グラフ
+st.write('年代別患者割合')
+
+df_age_pie = df['患者_年代'].value_counts().sort_index()
+
+fig = plt.figure(figsize=(10, 10))
+df_age_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1)
+plt.pie([100], colors='white', radius=0.5)
+plt.legend(df_age_pie.index, fancybox=True, fontsize=12, bbox_to_anchor=(1, 0.9))
+plt.title('年代別割合', y=0.46, fontsize=18, color='r')
+
+st.pyplot(fig)
+#円グラフ終わり
+
 st.header('直近の状況')
 number = st.number_input('直近何日間のデータを見ますか？', min_value=int(1), max_value=None,  step=None, format=None, key=None)
 
@@ -102,7 +118,14 @@ if not (len(df_age_span.index) == 0):
     right_column.bar_chart(df_age_span,height=300)
     right_column.table(df_age_span)
 
-
-
+df_age_span_pie = df['患者_年代'][df_date1>span].value_counts().sort_index()
+if not (len(df_age_span.index) == 0): 
+    fig = plt.figure(figsize=(10, 10))
+    df_age_span_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1)
+    plt.pie([100], colors='white', radius=0.5)
+    plt.legend(df_age_span_pie.index, fancybox=True, fontsize=12, bbox_to_anchor=(1, 0.9))
+    pie_title = '年代別割合' + '直近' + str(number) + '日間'
+    plt.title(pie_title,  y=0.46, fontsize=18, color='r')
+    st.pyplot(fig)
 
 
