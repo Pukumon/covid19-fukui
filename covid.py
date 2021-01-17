@@ -5,6 +5,7 @@ import requests
 import io
 import pandas as pd
 from datetime import datetime, date, timedelta, timezone
+import numpy as np
 
 st.sidebar.write("""
 ## 新型コロナ関連リンク
@@ -64,7 +65,12 @@ st.write('年代別患者割合')
 df_age_pie = df['患者_年代'].value_counts().sort_index()
 
 fig = plt.figure(figsize=(10, 10))
-df_age_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1, textprops = {"fontsize":"16"})
+
+count = len(df_age_pie.index)
+cmap = plt.get_cmap('Paired')
+color = cmap(np.arange(count))
+
+df_age_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1, textprops = {"fontsize":"16"}, colors=color)
 plt.pie([100], colors='white', radius=0.5)
 plt.legend(df_age_pie.index, fancybox=True, fontsize=12, bbox_to_anchor=(1, 0.9))
 plt.title('年代別割合', y=0.46, fontsize=18, color='r')
@@ -119,9 +125,14 @@ if not (len(df_age_span.index) == 0):
     right_column.table(df_age_span)
 
 df_age_span_pie = df['患者_年代'][df_date1>span].value_counts().sort_index()
+
+count = len(df_age_span_pie.index)
+cmap = plt.get_cmap('Paired')
+color = cmap(np.arange(count))
+
 if not (len(df_age_span.index) == 0): 
     fig = plt.figure(figsize=(10, 10))
-    df_age_span_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1, textprops = {"fontsize":"16"})
+    df_age_span_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1, textprops = {"fontsize":"16"}, colors=color)
     plt.pie([100], colors='white', radius=0.5)
     plt.legend(df_age_span_pie.index, fancybox=True, fontsize=12, bbox_to_anchor=(1, 0.9))
     pie_title = '年代別割合\n' + '直近' + str(number) + '日間'
