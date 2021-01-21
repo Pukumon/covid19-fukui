@@ -63,7 +63,7 @@ df_latlng = pd.read_csv('./latlng_data.csv')
 df_join = pd.merge(df['患者_居住地'],
                    df_latlng[["患者_居住地", "lat", "lon"]],
                    on="患者_居住地", how="left")
-st.write(df_join)
+# st.write(df_join)
 
 st.pydeck_chart(pdk.Deck(
     map_style='mapbox://styles/mapbox/light-v9',
@@ -196,7 +196,7 @@ if not (len(df_age_span.index) == 0):
     df_join_span = pd.merge(df_span['患者_居住地'],
                             df_latlng[["患者_居住地", "lat", "lon"]],
                             on="患者_居住地", how="left")
-    st.write(df_join)
+    # st.write(df_join)
 
     st.pydeck_chart(pdk.Deck(
         map_style='mapbox://styles/mapbox/light-v9',
