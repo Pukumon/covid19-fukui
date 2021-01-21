@@ -55,7 +55,47 @@ st.bar_chart(df_date)
 st.write('居住地別患者数')
 df_area_total = df['患者_居住地'].value_counts(ascending=False)
 st.bar_chart(df_area_total)
-'\n'
+
+# pydeck start
+df_latlng = pd.read_csv('./latlng_data.csv')
+# st.dataframe(df_latlng, width=800)
+
+df_join = pd.merge(df['患者_居住地'],
+                   df_latlng[["患者_居住地", "lat", "lon"]],
+                   on="患者_居住地", how="left")
+st.write(df_join)
+
+st.pydeck_chart(pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    initial_view_state=pdk.ViewState(
+        latitude=35.70,
+        longitude=136.00,
+        zoom=8.5,
+        pitch=50,
+        bearing=-27
+    ),
+    layers=[
+        pdk.Layer(
+            'HexagonLayer',
+            data=df_join,
+            get_position='[lon, lat]',
+            radius=800,
+            elevation_scale=50,
+            elevation_range=[0, 500],
+            pickable=True,
+            extruded=True,
+        ),
+        # pdk.Layer(
+        #     'ScatterplotLayer',
+        #     data=df_join,
+        #     get_position='[lon, lat]',
+        #     get_color='[200, 30, 0, 160]',
+        #     get_radius=500,
+        # ),
+    ],
+))
+
+# pydeck end
 
 st.write('年代別患者数')
 df_age = df['患者_年代'].value_counts()
@@ -81,47 +121,6 @@ plt.title('年代別割合', y=0.46, fontsize=18, color='r')
 
 st.pyplot(fig)
 # 円グラフ終わり
-
-# pydeck start
-
-df_latlng = pd.read_csv('./latlng_data.csv')
-# st.dataframe(df_latlng, width=800)
-
-df_join = pd.merge(df['患者_居住地'],
-                     df_latlng[["患者_居住地", "lat", "lon"]],
-                     on="患者_居住地", how="left")
-# st.write(df_join)
-
-st.pydeck_chart(pdk.Deck(
-    map_style='mapbox://styles/mapbox/light-v9',
-    initial_view_state=pdk.ViewState(
-        latitude=35.7,
-        longitude=136.00,
-        zoom=8.5,
-        pitch=60,
-    ),
-    layers=[
-        pdk.Layer(
-            'HexagonLayer',
-            data=df_join,
-            get_position='[lon, lat]',
-            radius=800,
-            elevation_scale=50,
-            elevation_range=[0, 500],
-            pickable=True,
-            extruded=True,
-        ),
-        # pdk.Layer(
-        #     'ScatterplotLayer',
-        #     data=df_join,
-        #     get_position='[lon, lat]',
-        #     get_color='[200, 30, 0, 160]',
-        #     get_radius=200,
-        # ),
-    ],
-))
-
-# pydeck end
 
 
 st.header('直近の状況')
@@ -188,3 +187,45 @@ if not (len(df_age_span.index) == 0):
     pie_title = '年代別割合\n' + '直近' + str(number) + '日間'
     plt.title(pie_title,  y=0.46, fontsize=18, color='r')
     st.pyplot(fig)
+
+# pydeck start
+if not (len(df_age_span.index) == 0):
+    df_latlng = pd.read_csv('./latlng_data.csv')
+# st.dataframe(df_latlng, width=800)
+
+    df_join_span = pd.merge(df_span['患者_居住地'],
+                            df_latlng[["患者_居住地", "lat", "lon"]],
+                            on="患者_居住地", how="left")
+    st.write(df_join)
+
+    st.pydeck_chart(pdk.Deck(
+        map_style='mapbox://styles/mapbox/light-v9',
+        initial_view_state=pdk.ViewState(
+            latitude=35.70,
+            longitude=136.00,
+            zoom=8.5,
+            pitch=50,
+            bearing=-27
+        ),
+        layers=[
+            pdk.Layer(
+                'HexagonLayer',
+                data=df_join_span,
+                get_position='[lon, lat]',
+                radius=200,
+                elevation_scale=50,
+                elevation_range=[0, 500],
+                pickable=True,
+                extruded=True,
+            ),
+            # pdk.Layer(
+            #     'ScatterplotLayer',
+            #     data=df_join_span,
+            #     get_position='[lon, lat]',
+            #     get_color='[200, 30, 0, 160]',
+            #     get_radius=500,
+            # ),
+        ],
+    ))
+
+# pydeck end
