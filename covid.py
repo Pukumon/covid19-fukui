@@ -6,6 +6,7 @@ import io
 import pandas as pd
 from datetime import datetime, date, timedelta, timezone
 import numpy as np
+import pydeck as pdk
 
 st.sidebar.write("""
 ## 新型コロナ関連リンク
@@ -31,18 +32,19 @@ st.sidebar.write("""
 (C)2021 Pukumon Go All rights reserved.
 """)
 
-st.title('福井県新型コロナウイルス情報')  
+st.title('福井県新型コロナウイルス情報')
 now = datetime.now(timezone(timedelta(hours=9))).strftime("%Y/%m/%d %H:%M")
-st.info(now + '現在公開分まで\n'+ '\nデータ元:福井県新型コロナウイルス感染症のオープンデータhttps://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv')
+st.info(now + '現在公開分まで\n' + '\nデータ元:福井県新型コロナウイルス感染症のオープンデータhttps://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv')
 '\n'
 
 url = 'https://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv'
 r = requests.get(url).content
-df = pd.read_csv(io.BytesIO(r),index_col='No', sep=',').sort_values('No', ascending=False)
+df = pd.read_csv(io.BytesIO(r), index_col='No',
+                 sep=',').sort_values('No', ascending=False)
 
 st.write('陽性患者属性')
 st.dataframe(df[['公表_年月日', '患者_居住地', '患者_年代',
- '患者_性別', '患者_職業']],width=640, height=200)
+                 '患者_性別', '患者_職業']], width=640, height=200)
 '\n'
 
 st.write('日別新規陽性者数')
@@ -59,7 +61,7 @@ st.write('年代別患者数')
 df_age = df['患者_年代'].value_counts()
 st.bar_chart(df_age)
 
-#円グラフ
+# 円グラフ
 st.write('年代別患者割合')
 
 df_age_pie = df['患者_年代'].value_counts().sort_index()
@@ -70,16 +72,61 @@ count = len(df_age_pie.index)
 cmap = plt.get_cmap('Paired')
 color = cmap(np.arange(count))
 
-df_age_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1, textprops = {"fontsize":"16"}, colors=color)
+df_age_pie.plot(kind='pie', autopct=lambda p: '{:.1f}%'.format(p) if p > 1 else '', startangle=90,
+                counterclock=False, pctdistance=0.75, labeldistance=1.1, textprops={"fontsize": "16"}, colors=color)
 plt.pie([100], colors='white', radius=0.5)
-plt.legend(df_age_pie.index, fancybox=True, fontsize=12, bbox_to_anchor=(1, 0.9))
+plt.legend(df_age_pie.index, fancybox=True,
+           fontsize=12, bbox_to_anchor=(1, 0.9))
 plt.title('年代別割合', y=0.46, fontsize=18, color='r')
 
 st.pyplot(fig)
-#円グラフ終わり
+# 円グラフ終わり
+
+# pydeck start
+
+df_latlng = pd.read_csv('./latlng_data.csv')
+# st.dataframe(df_latlng, width=800)
+
+df_join = pd.merge(df['患者_居住地'],
+                     df_latlng[["患者_居住地", "lat", "lon"]],
+                     on="患者_居住地", how="left")
+# st.write(df_join)
+
+st.pydeck_chart(pdk.Deck(
+    map_style='mapbox://styles/mapbox/light-v9',
+    initial_view_state=pdk.ViewState(
+        latitude=35.7,
+        longitude=136.00,
+        zoom=8.5,
+        pitch=60,
+    ),
+    layers=[
+        pdk.Layer(
+            'HexagonLayer',
+            data=df_join,
+            get_position='[lon, lat]',
+            radius=800,
+            elevation_scale=50,
+            elevation_range=[0, 500],
+            pickable=True,
+            extruded=True,
+        ),
+        # pdk.Layer(
+        #     'ScatterplotLayer',
+        #     data=df_join,
+        #     get_position='[lon, lat]',
+        #     get_color='[200, 30, 0, 160]',
+        #     get_radius=200,
+        # ),
+    ],
+))
+
+# pydeck end
+
 
 st.header('直近の状況')
-number = st.number_input('直近何日間のデータを見ますか？', min_value=int(1), max_value=None,  step=None, format=None, key=None)
+number = st.number_input('直近何日間のデータを見ますか？', min_value=int(
+    1), max_value=None,  step=None, format=None, key=None)
 
 
 today = datetime.today() + timedelta(hours=+9)
@@ -92,12 +139,12 @@ st.write('直近', number, '日間のデータ', span_str, '〜', today_str)
 df_date1 = pd.to_datetime(df['公表_年月日'])
 
 df_span = df[['公表_年月日', '患者_居住地', '患者_年代',
- '患者_性別', '患者_職業']][df_date1 > span]
+              '患者_性別', '患者_職業']][df_date1 > span]
 
 df_span1 = (df_span != 0)
 sum_span = df_span1['公表_年月日'].sum().astype(str)
 
-if (len(df_span.index) == 0): #emptyよりlenのほうが処理が早い
+if (len(df_span.index) == 0):  # emptyよりlenのほうが処理が早い
     st.info('ご指定の期間内に陽性者はおりません')
 else:
     st.error('ご指定の期間内の新規陽性者数は' + sum_span + '人です')
@@ -106,37 +153,38 @@ else:
 
 left_column, center_column, right_column = st.beta_columns(3)
 
-df_date_span = pd.to_datetime(df['公表_年月日'])[df_date1>span].dt.date.value_counts()
+df_date_span = pd.to_datetime(df['公表_年月日'])[
+    df_date1 > span].dt.date.value_counts()
 if not (df_date_span.empty):
     left_column.write('日別新規陽性者数')
-    left_column.bar_chart(df_date_span,height=300)
+    left_column.bar_chart(df_date_span, height=300)
     left_column.table(df_date_span)
 
-df_area_span = df['患者_居住地'][df_date1>span].value_counts()
+df_area_span = df['患者_居住地'][df_date1 > span].value_counts()
 if not (df_area_span.empty):
     center_column.write('居住地別患者数')
-    center_column.bar_chart(df_area_span,height=300)
+    center_column.bar_chart(df_area_span, height=300)
     center_column.table(df_area_span)
 
-df_age_span = df['患者_年代'][df_date1>span].value_counts()
-if not (len(df_age_span.index) == 0): 
+df_age_span = df['患者_年代'][df_date1 > span].value_counts()
+if not (len(df_age_span.index) == 0):
     right_column.write('年代別患者数')
-    right_column.bar_chart(df_age_span,height=300)
+    right_column.bar_chart(df_age_span, height=300)
     right_column.table(df_age_span)
 
-df_age_span_pie = df['患者_年代'][df_date1>span].value_counts().sort_index()
+df_age_span_pie = df['患者_年代'][df_date1 > span].value_counts().sort_index()
 
 count = len(df_age_span_pie.index)
 cmap = plt.get_cmap('Paired')
 color = cmap(np.arange(count))
 
-if not (len(df_age_span.index) == 0): 
+if not (len(df_age_span.index) == 0):
     fig = plt.figure(figsize=(10, 10))
-    df_age_span_pie.plot(kind='pie', autopct=lambda p:'{:.1f}%'.format(p) if p>1 else '', startangle=90, counterclock=False , pctdistance=0.75, labeldistance=1.1, textprops = {"fontsize":"16"}, colors=color)
+    df_age_span_pie.plot(kind='pie', autopct=lambda p: '{:.1f}%'.format(
+        p) if p > 1 else '', startangle=90, counterclock=False, pctdistance=0.75, labeldistance=1.1, textprops={"fontsize": "16"}, colors=color)
     plt.pie([100], colors='white', radius=0.5)
-    plt.legend(df_age_span_pie.index, fancybox=True, fontsize=12, bbox_to_anchor=(1, 0.9))
+    plt.legend(df_age_span_pie.index, fancybox=True,
+               fontsize=12, bbox_to_anchor=(1, 0.9))
     pie_title = '年代別割合\n' + '直近' + str(number) + '日間'
     plt.title(pie_title,  y=0.46, fontsize=18, color='r')
     st.pyplot(fig)
-
-
