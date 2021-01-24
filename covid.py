@@ -218,13 +218,13 @@ if not (len(df_age_span.index) == 0):
                 pickable=True,
                 extruded=True,
             ),
-            # pdk.Layer(
-            #     'ScatterplotLayer',
-            #     data=df_join_span,
-            #     get_position='[lon, lat]',
-            #     get_color='[200, 30, 0, 160]',
-            #     get_radius=500,
-            # ),
+            pdk.Layer(
+                'ScatterplotLayer',
+                data=df_join_span,
+                get_position='[lon, lat]',
+                get_color='[200, 30, 0, 160]',
+                get_radius=800,
+            ),
         ],
     ))
 
