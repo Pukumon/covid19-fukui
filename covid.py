@@ -119,29 +119,30 @@ df_join = pd.merge(df['患者_居住地'],
                    df_latlng[["患者_居住地", "lat", "lon"]],
                    on="患者_居住地", how="left")
 
+#地域が増えすぎたため非表示
 
-st.pydeck_chart(pdk.Deck(
-    map_style='mapbox://styles/mapbox/light-v9',
-    initial_view_state=pdk.ViewState(
-        latitude=35.70,
-        longitude=136.00,
-        zoom=8.5,
-        pitch=50,
-        bearing=-27
-    ),
-    layers=[
-        pdk.Layer(
-            'HexagonLayer',
-            data=df_join,
-            get_position='[lon, lat]',
-            radius=800,
-            elevation_scale=50,
-            elevation_range=[0, 500],
-            pickable=True,
-            extruded=True,
-        ),
-    ],
-))
+# st.pydeck_chart(pdk.Deck(
+#     map_style='mapbox://styles/mapbox/light-v9',
+#     initial_view_state=pdk.ViewState(
+#         latitude=35.70,
+#         longitude=136.00,
+#         zoom=8.5,
+#         pitch=50,
+#         bearing=-27
+#     ),
+#     layers=[
+#         pdk.Layer(
+#             'HexagonLayer',
+#             data=df_join,
+#             get_position='[lon, lat]',
+#             radius=800,
+#             elevation_scale=50,
+#             elevation_range=[0, 500],
+#             pickable=True,
+#             extruded=True,
+#         ),
+#     ],
+# ))
 
 # pydeck end
 
