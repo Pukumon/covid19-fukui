@@ -45,7 +45,7 @@ st.sidebar.write("""
 
 url = "https://weatherapi-com.p.rapidapi.com/forecast.json"
 
-querystring = {"q":"Naha","days":"2"}
+querystring = {"q":"fukui","days":"2"}
 
 headers = {
     'x-rapidapi-key': "3dbbb206c5msh3f5cf379ca186f7p10b396jsn4d8d916c30ef",
