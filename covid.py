@@ -45,7 +45,7 @@ st.sidebar.write("""
 
 url = "https://weatherapi-com.p.rapidapi.com/forecast.json"
 
-querystring = {"q":"fukui","days":"2"}
+querystring = {"q":"fukui","days":"3"}
 
 headers = {
     'x-rapidapi-key': "3dbbb206c5msh3f5cf379ca186f7p10b396jsn4d8d916c30ef",
@@ -56,29 +56,41 @@ response = requests.request("GET", url, headers=headers, params=querystring)
 
 weather = json.loads(response.text)
 
-st.sidebar.write("明日は", weather["forecast"]["forecastday"][1]["date"])
-
-st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][1]["day"]["maxtemp_c"], '度')
-st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][1]["day"]["mintemp_c"], "度")
-st.sidebar.write("天気", weather["forecast"]["forecastday"][1]["day"]["condition"]["text"])
-
-icon_url = "https:" + weather["forecast"]["forecastday"][1]["day"]["condition"]["icon"]
-# st.sidebar.write(icon_url)
+st.sidebar.write("今日", weather["forecast"]["forecastday"][0]["date"], "の予報")
+st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][0]["day"]["maxtemp_c"], '度')
+st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][0]["day"]["mintemp_c"], "度")
+st.sidebar.write("天気", weather["forecast"]["forecastday"][0]["day"]["condition"]["text"])
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context #SSL認証に関するエラー返ってきたときの対処法
 
-url1 = icon_url
-img_read = urllib.request.urlopen(url1).read() #画像データGET
-img_bin = io.BytesIO(img_read) #メモリに保持してディレクトリ偽装みたいなことする
+icon_url0 = "https:" + weather["forecast"]["forecastday"][0]["day"]["condition"]["icon"]
+url0 = icon_url0
+img_read0 = urllib.request.urlopen(url0).read() #画像データGET
+img_bin0 = io.BytesIO(img_read0) #メモリに保持してディレクトリ偽装みたいなことする
+st.sidebar.image(img_bin0)
 
-st.sidebar.image(img_bin)
+st.sidebar.write("明日", weather["forecast"]["forecastday"][1]["date"], "の予報")
+st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][1]["day"]["maxtemp_c"], '度')
+st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][1]["day"]["mintemp_c"], "度")
+st.sidebar.write("天気", weather["forecast"]["forecastday"][1]["day"]["condition"]["text"])
 
+icon_url1 = "https:" + weather["forecast"]["forecastday"][1]["day"]["condition"]["icon"]
+url1 = icon_url1
+img_read1 = urllib.request.urlopen(url1).read() 
+img_bin1 = io.BytesIO(img_read1) 
+st.sidebar.image(img_bin1)
 
+st.sidebar.write("明後日", weather["forecast"]["forecastday"][2]["date"], "の予報")
+st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][2]["day"]["maxtemp_c"], '度')
+st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][2]["day"]["mintemp_c"], "度")
+st.sidebar.write("天気", weather["forecast"]["forecastday"][2]["day"]["condition"]["text"])
 
-
-
-
+icon_url2 = "https:" + weather["forecast"]["forecastday"][2]["day"]["condition"]["icon"]
+url2 = icon_url2
+img_read2 = urllib.request.urlopen(url2).read() 
+img_bin2 = io.BytesIO(img_read2) 
+st.sidebar.image(img_bin2)
 
 
 
