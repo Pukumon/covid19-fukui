@@ -59,6 +59,8 @@ weather = json.loads(response.text)
 st.sidebar.write("今日", weather["forecast"]["forecastday"][0]["date"], "の予報")
 st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][0]["day"]["maxtemp_c"], '度')
 st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][0]["day"]["mintemp_c"], "度")
+st.sidebar.write("日の出", weather["forecast"]["forecastday"][0]["astro"]["sunrise"])
+st.sidebar.write("日の入", weather["forecast"]["forecastday"][0]["astro"]["sunset"])
 st.sidebar.write("天気", weather["forecast"]["forecastday"][0]["day"]["condition"]["text"])
 
 import ssl
@@ -73,6 +75,8 @@ st.sidebar.image(img_bin0)
 st.sidebar.write("明日", weather["forecast"]["forecastday"][1]["date"], "の予報")
 st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][1]["day"]["maxtemp_c"], '度')
 st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][1]["day"]["mintemp_c"], "度")
+st.sidebar.write("日の出", weather["forecast"]["forecastday"][1]["astro"]["sunrise"])
+st.sidebar.write("日の入", weather["forecast"]["forecastday"][1]["astro"]["sunset"])
 st.sidebar.write("天気", weather["forecast"]["forecastday"][1]["day"]["condition"]["text"])
 
 icon_url1 = "https:" + weather["forecast"]["forecastday"][1]["day"]["condition"]["icon"]
@@ -84,6 +88,8 @@ st.sidebar.image(img_bin1)
 st.sidebar.write("明後日", weather["forecast"]["forecastday"][2]["date"], "の予報")
 st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][2]["day"]["maxtemp_c"], '度')
 st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][2]["day"]["mintemp_c"], "度")
+st.sidebar.write("日の出", weather["forecast"]["forecastday"][2]["astro"]["sunrise"])
+st.sidebar.write("日の入", weather["forecast"]["forecastday"][2]["astro"]["sunset"])
 st.sidebar.write("天気", weather["forecast"]["forecastday"][2]["day"]["condition"]["text"])
 
 icon_url2 = "https:" + weather["forecast"]["forecastday"][2]["day"]["condition"]["icon"]
@@ -91,6 +97,7 @@ url2 = icon_url2
 img_read2 = urllib.request.urlopen(url2).read() 
 img_bin2 = io.BytesIO(img_read2) 
 st.sidebar.image(img_bin2)
+
 
 
 
