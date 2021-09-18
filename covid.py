@@ -56,49 +56,66 @@ response = requests.request("GET", url, headers=headers, params=querystring)
 
 weather = json.loads(response.text)
 
-st.sidebar.write("今日", weather["forecast"]["forecastday"][0]["date"], "の予報")
-st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][0]["day"]["maxtemp_c"], '度')
-st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][0]["day"]["mintemp_c"], "度")
-st.sidebar.write("日の出", weather["forecast"]["forecastday"][0]["astro"]["sunrise"])
-st.sidebar.write("日の入", weather["forecast"]["forecastday"][0]["astro"]["sunset"])
-st.sidebar.write("天気", weather["forecast"]["forecastday"][0]["day"]["condition"]["text"])
-
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context #SSL認証に関するエラー返ってきたときの対処法
 
-icon_url0 = "https:" + weather["forecast"]["forecastday"][0]["day"]["condition"]["icon"]
-url0 = icon_url0
-img_read0 = urllib.request.urlopen(url0).read() #画像データGET
-img_bin0 = io.BytesIO(img_read0) #メモリに保持してディレクトリ偽装みたいなことする
-st.sidebar.image(img_bin0)
+def forcast(n):
+    st.sidebar.write(weather["forecast"]["forecastday"][n]["day"]["condition"]["text"])
+    # お天気アイコン表示
+    icon_url = "https:" + weather["forecast"]["forecastday"][n]["day"]["condition"]["icon"]
+    img_read = urllib.request.urlopen(icon_url).read() #画像データGET
+    img_bin = io.BytesIO(img_read) #メモリに保持してディレクトリ偽装みたいなことする
+    st.sidebar.image(img_bin)
+    
+    st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][n]["day"]["maxtemp_c"], '度')
+    st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][n]["day"]["mintemp_c"], "度")
+    st.sidebar.write("日の出", weather["forecast"]["forecastday"][n]["astro"]["sunrise"])
+    st.sidebar.write("日の入", weather["forecast"]["forecastday"][n]["astro"]["sunset"])
+    
 
-st.sidebar.write("明日", weather["forecast"]["forecastday"][1]["date"], "の予報")
-st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][1]["day"]["maxtemp_c"], '度')
-st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][1]["day"]["mintemp_c"], "度")
-st.sidebar.write("日の出", weather["forecast"]["forecastday"][1]["astro"]["sunrise"])
-st.sidebar.write("日の入", weather["forecast"]["forecastday"][1]["astro"]["sunset"])
-st.sidebar.write("天気", weather["forecast"]["forecastday"][1]["day"]["condition"]["text"])
+# def weather_icon(i):
+#     icon_url = "https:" + weather["forecast"]["forecastday"][i]["day"]["condition"]["icon"]
+#     img_read = urllib.request.urlopen(icon_url).read() #画像データGET
+#     img_bin = io.BytesIO(img_read) #メモリに保持してディレクトリ偽装みたいなことする
+#     st.sidebar.image(img_bin)
+    
+st.sidebar.write('<b style=color:orange>今日</b>', weather["forecast"]["forecastday"][0]["date"], '<b style=color:orange>の予報</b>', unsafe_allow_html=True)
+forcast(0)
+# weather_icon(0)
 
-icon_url1 = "https:" + weather["forecast"]["forecastday"][1]["day"]["condition"]["icon"]
-url1 = icon_url1
-img_read1 = urllib.request.urlopen(url1).read() 
-img_bin1 = io.BytesIO(img_read1) 
-st.sidebar.image(img_bin1)
+#1時間おきの天気
+now = datetime.now(timezone(timedelta(hours=9))).strftime("%H:%M")
 
-st.sidebar.write("明後日", weather["forecast"]["forecastday"][2]["date"], "の予報")
-st.sidebar.write("予想最高気温", weather["forecast"]["forecastday"][2]["day"]["maxtemp_c"], '度')
-st.sidebar.write("予想最低気温", weather["forecast"]["forecastday"][2]["day"]["mintemp_c"], "度")
-st.sidebar.write("日の出", weather["forecast"]["forecastday"][2]["astro"]["sunrise"])
-st.sidebar.write("日の入", weather["forecast"]["forecastday"][2]["astro"]["sunset"])
-st.sidebar.write("天気", weather["forecast"]["forecastday"][2]["day"]["condition"]["text"])
+if(now < "23:00"):
+    st.sidebar.write('<b>1時間おきの予報</b>', unsafe_allow_html=True)
 
-icon_url2 = "https:" + weather["forecast"]["forecastday"][2]["day"]["condition"]["icon"]
-url2 = icon_url2
-img_read2 = urllib.request.urlopen(url2).read() 
-img_bin2 = io.BytesIO(img_read2) 
-st.sidebar.image(img_bin2)
+hour_weather = weather["forecast"]["forecastday"][0]["hour"]
 
 
+for hour in range(24):
+    if(hour_weather[hour]["time"][11:16] > now):
+        st.sidebar.write(hour_weather[hour]["time"][11:16])
+        
+        icon_url24 = "https:" + hour_weather[hour]["condition"]["icon"]
+        img_read24 = urllib.request.urlopen(icon_url24).read() #画像データGET
+        img_bin24 = io.BytesIO(img_read24) #メモリに保持してディレクトリ偽装みたいなことする
+        st.sidebar.image(img_bin24)
+        
+        st.sidebar.write("気温", hour_weather[hour]["temp_c"], "度",  "降水確率", round(hour_weather[hour]["chance_of_rain"], -1), "%")
+        # st.sidebar.write(hour_weather[hour]["condition"]["text"])
+        # st.sidebar.write("https:" + hour_weather[hour]["condition"]["icon"])
+
+st.sidebar.write("<b style=color:orange>明日</b>", weather["forecast"]["forecastday"][1]["date"], "<b style=color:orange>の予報</b>", unsafe_allow_html=True)
+forcast(1)
+# weather_icon(1)
+
+st.sidebar.write("<b style=color:orange>明後日</b>", weather["forecast"]["forecastday"][2]["date"], "<b style=color:orange>の予報</b>", unsafe_allow_html=True)
+forcast(2)
+# weather_icon(2)
+
+
+    
+    
 
 
 st.title('福井県新型コロナウイルス情報')
