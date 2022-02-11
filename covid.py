@@ -126,11 +126,11 @@ st.info(now + '現在公開分までです\n' + '\nデータ元:福井県新型�
 url = 'https://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv'
 r = requests.get(url).content
 df = pd.read_csv(io.BytesIO(r), index_col='No',
-                 sep=',').drop(index=['※1011は欠番']).dropna(how='all').fillna("非公表")
+                 sep=',').drop(index=['※1011番は欠番']).dropna(how='all').fillna("非公表")
 
 # indexの型変更
 df.index = df.index.astype(int)
-df = df.sort_values('公表_年月日', ascending=False)
+df = df.sort_values('No', ascending=False)
 
 
 st.write('陽性患者属性')
