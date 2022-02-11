@@ -129,8 +129,8 @@ df = pd.read_csv(io.BytesIO(r), index_col='No',
                  sep=',')
 
 # indexの型変更
-df.index = df.index.astype(int)
-df = df.sort_values('No', ascending=False)
+# df.index = df.index.astype(int)
+# df = df.sort_values('No', ascending=False)
 
 
 st.write('陽性患者属性')
