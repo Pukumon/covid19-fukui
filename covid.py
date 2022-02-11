@@ -130,7 +130,7 @@ df = pd.read_csv(io.BytesIO(r), index_col='No',
 
 # indexの型変更
 df.index = df.index.astype(int)
-df = df.sort_values('No', ascending=False)
+df = df.sort_values('公表_年月日', ascending=False)
 
 
 st.write('陽性患者属性')
