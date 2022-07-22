@@ -234,7 +234,7 @@ else:
     st.write('陽性患者属性')
     st.dataframe(df_span, width=600, height=300)
 
-left_column, center_column, right_column = st.beta_columns(3)
+left_column,  right_column = st.beta_columns(2)
 
 df_date_span = pd.to_datetime(df['公表_年月日'])[
     df_date1 > span].dt.date.value_counts()
