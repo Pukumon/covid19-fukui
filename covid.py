@@ -128,8 +128,8 @@ r = requests.get(url).content
 df = pd.read_csv(io.BytesIO(r), index_col=0, sep=',')
 df = df.fillna('非公表').replace({'　': '非公表', '10歳': '10代', '80代　': '80代', '30代 ': '30代'})
 
-#1から連番を割り付け
-df.index = np.arange(1, len(df)+1)
+# indexの型変更
+# df.index = df.index.astype(int)
 # df = df.sort_values('No', ascending=False)
 
 st.write('陽性患者属性')
