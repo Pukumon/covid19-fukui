@@ -125,7 +125,7 @@ st.info(now + '現在公開分までです\n' + '\nデータ元:福井県新型�
 
 url = 'https://www.pref.fukui.lg.jp/doc/toukei-jouhou/covid-19_d/fil/covid19_patients.csv'
 r = requests.get(url).content
-df = pd.read_csv(io.BytesIO(r), index_col=0, sep=',')
+df = pd.read_csv(io.BytesIO(r), sep=',')
 df = df.fillna('非公表').replace({'　': '非公表', '10歳': '10代', '80代　': '80代', '30代 ': '30代'})
 
 # indexの型変更
